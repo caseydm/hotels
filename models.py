@@ -14,9 +14,9 @@ class Hotel(Base):
     __tablename__ = 'hotels'
 
     id = Column(Integer, primary_key=True)
-    hotelName = Column(String, nullable=False)
-    phoneNumber = Column(String)
-    parkingFee = Column(String)
+    name = Column(String, nullable=False)
+    phone_number = Column(String)
+    parking_fee = Column(String)
 
 
 class Rate(Base):
