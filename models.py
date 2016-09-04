@@ -1,6 +1,6 @@
 import datetime
 from sqlalchemy import create_engine, ForeignKey
-from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, Numeric
+from sqlalchemy import Column, Integer, String, Date, DateTime, Numeric
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 import config
@@ -14,9 +14,7 @@ class Hotel(Base):
     __tablename__ = 'hotels'
 
     id = Column(Integer, primary_key=True)
-    hotelName = Column(String)
-    govtRateOffered = Column(Boolean, nullable=False)
-    govtRateByPhone = Column(Boolean)
+    hotelName = Column(String, nullable=False)
     phoneNumber = Column(String)
     parkingFee = Column(String)
 
@@ -25,10 +23,7 @@ class Rate(Base):
     __tablename__ = 'rates'
 
     id = Column(Integer, primary_key=True)
-    standardRate = Column(Numeric(6, 2))
-    govtRate = Column(Numeric(6, 2))
-    standardAvailable = Column(Boolean, nullable=False)
-    govtAvailable = Column(Boolean, nullable=False)
+    rate = Column(Numeric(6, 2))
     arrive = Column(Date, nullable=False)
     depart = Column(Date, nullable=False)
     updated = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
@@ -59,7 +54,6 @@ def db_create_tables(engine):
 
 
 def save_hotel(item, session):
-
     rate = Rate(**item)
 
     try:
@@ -67,11 +61,8 @@ def save_hotel(item, session):
         if q.count():
             q.update({
                 'updated': datetime.datetime.utcnow(),
-                'standardRate': rate.standardRate,
-                'govtRate': rate.govtRate,
-                'standardAvailable': rate.standardAvailable,
-                'govtAvailable': rate.govtAvailable
-                })
+                'rate': rate.rate
+                    })
         else:
             session.add(rate)
         session.commit()
