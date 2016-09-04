@@ -42,7 +42,7 @@ class Location(Base):
 
 # db operations
 def db_setup():
-    engine = create_engine('postgresql://{0}:{1}@localhost:5433/hotels'.format(config.DB_USER, config.DB_PASS))
+    engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
     db_create_tables(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
