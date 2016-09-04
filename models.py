@@ -23,9 +23,9 @@ class Rate(Base):
     __tablename__ = 'rates'
 
     id = Column(Integer, primary_key=True)
-    rate = Column(Numeric(6, 2))
+    price = Column(Numeric(6, 2))
     arrive = Column(Date, nullable=False)
-    depart = Column(Date, nullable=False)
+    link = Column(String, nullable=False)
     updated = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     location_id = Column(Integer, ForeignKey('locations.id'))
     hotel_id = Column(Integer, ForeignKey('hotels.id'))
@@ -61,7 +61,7 @@ def save_hotel(item, session):
         if q.count():
             q.update({
                 'updated': datetime.datetime.utcnow(),
-                'rate': rate.rate
+                'price': rate.price
                     })
         else:
             session.add(rate)

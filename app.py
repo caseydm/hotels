@@ -14,7 +14,7 @@ def main():
         rates = get_rates()
         for rate in rates:
             print(rate['date'], rate['price'], rate['link'])
-        email_results(rates)
+        save_results(rates)
     except (AttributeError, TypeError) as e:
         print('Error: {}'.format(e))
         sys.exit(1)
@@ -59,7 +59,9 @@ def parse_rates(soup):
 
             # append data to rates list
             rates.append({
-                'date': res_date,
+                'hotel': 'Ritz Carlton Lake Oconee',
+                'city': 'Lake Oconee, GA',
+                'arrive': res_date,
                 'price': query['rate'][0],
                 'link': 'https://marriott.com' + urlunparse(parsed_url)
             })
@@ -107,29 +109,20 @@ def get_rates():
     rates = filtered
 
     # sort rates by date
-    rates.sort(key=lambda x: datetime.strptime(x['date'], '%A, %b %d'))
+    rates.sort(key=lambda x: datetime.strptime(x['arrive'], '%A, %b %d'))
 
     return rates
 
 
-def email_results(rates):
-    # sendgrid setup
-    sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+def save_results(rates, session):
 
-    # message
-    message = 'Available dates for Ritz Lake Oconee:<br><br>'
     for rate in rates:
-        message += '<b>Date:</b> {} <br><b>Rate:</b> {}'.format(
-            rate['date'],
-            '<a href=' + rate['link'] + '>' + rate['price'] + '</a><br><br>'
-        )
-    from_email = Email(os.environ.get('FROM_EMAIL'))
-    subject = 'Ritz Hotel Rates'
-    to_email = Email(os.environ.get('TO_EMAIL'))
-    content = Content('text/html', message)
-    mail = Mail(from_email, subject, to_email, content)
-    response = sg.client.mail.send.post(request_body=mail.get())
-    print(response.status_code)
+        nameQuery = session.query(Hotel).filter_by(hotelName=rate['hotel']).first()
+        if nameQuery:
+            hotelName = nameQuery
+        else:
+            hotelName = Hotel(hotelName=rate['hotel'])
+        location = session.query(Location).filter_by(city=rate['city']).first()
 
 
 # run program
