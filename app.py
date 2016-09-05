@@ -7,26 +7,16 @@ from urllib.parse import urlparse, parse_qs, urlunparse
 from robobrowser import RoboBrowser
 from sendgrid.helpers.mail import *
 from models import Rate, Hotel, Location, db_setup
+from utils import get_or_create
 
 
 def main():
     try:
-        hotel_name = Hotel(name='Ritz Carlton Lake Oconee')
-        location = Location(city='Lake Oconee, GA')
-        # name_query = session.query(Hotel).filter_by(name=rate['hotel']).first()
-        # if name_query:
-        #     hotel_name = name_query
-        # else:
-        #     hotel_name = Hotel(name=rate['hotel'])
-        # location_query = session.query(Location).filter_by(city=rate['city']).first()
-        # if location_query:
-        #     location_name = location_query
-        # else:
-        #     location_name = Location(city=rate['city'])
-
+        session = db_setup()
+        hotel_name = get_or_create(session, Hotel, name='Ritz Carlton Lake Oconee')
+        location = get_or_create(session, Location, city='Lake Oconee, GA')
         hotel = {'property_code': 'AHNRZ', 'name': hotel_name, 'city': location}
         rates = get_rates(hotel)
-        session = db_setup()
         save_results(rates, session)
         session.close()
     except () as e:
