@@ -1,11 +1,9 @@
-import os
 import time
 import sys
 from datetime import datetime, timedelta
 from dateutil import relativedelta
 from urllib.parse import urlparse, parse_qs, urlunparse
 from robobrowser import RoboBrowser
-from sendgrid.helpers.mail import *
 from models import Rate, Hotel, Location, db_setup
 from utils import get_or_create
 from settings import HOTELS
@@ -22,7 +20,7 @@ def main():
             save_results(rates, session)
             time.sleep(3)
         session.close()
-    except () as e:
+    except (AttributeError, TypeError) as e:
         print('Error: {}'.format(e))
         sys.exit(1)
 
@@ -84,7 +82,6 @@ def parse_rates(soup, hotel):
             # convert date to datetime format
             res_date = query['fromDate'][0]
             res_date = datetime.strptime(res_date, '%m/%d/%y')
-            # res_date = res_date.strftime('%A, %b %d')
 
             # append data to rates list
             rates.append({
@@ -124,6 +121,7 @@ def save_results(rates, session):
         rate = Rate(**item)
 
         try:
+            # check if already in database
             q = session.query(Rate).filter(Rate.hotel==rate.hotel, Rate.arrive==rate.arrive)
             if q.count():
                 q.update({

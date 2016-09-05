@@ -1,3 +1,4 @@
+import sys
 from freezegun import freeze_time
 from app import build_dates, parse_rates
 from bs4 import BeautifulSoup
@@ -24,7 +25,7 @@ def test_date_end_month():
 
 
 def test_parse_rates():
-    data = open('test_data_october_2016.html').read()
+    data = open(sys.path[0] + '/tests/test_data_october_2016.html').read()
     soup = BeautifulSoup(data, 'html.parser')
 
     rates = parse_rates(soup)

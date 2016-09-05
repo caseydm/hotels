@@ -1,0 +1,3 @@
+1. Add additional tests
+2. Refactor save_result function so it does not save hotel name and location multiple times
+3. Send an email when there is a problem scraping
