@@ -1,6 +1,6 @@
 import sys
 from freezegun import freeze_time
-from app import build_dates, parse_rates
+from scraper import build_dates, parse_rates
 from bs4 import BeautifulSoup
 
 

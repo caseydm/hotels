@@ -20,7 +20,7 @@ def main():
             save_results(rates, session)
             time.sleep(3)
         session.close()
-    except (AttributeError, TypeError) as e:
+    except () as e:
         print('Error: {}'.format(e))
         sys.exit(1)
 
