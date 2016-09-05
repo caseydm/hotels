@@ -8,16 +8,19 @@ from robobrowser import RoboBrowser
 from sendgrid.helpers.mail import *
 from models import Rate, Hotel, Location, db_setup
 from utils import get_or_create
+from settings import HOTELS
 
 
 def main():
     try:
         session = db_setup()
-        hotel_name = get_or_create(session, Hotel, name='Ritz Carlton Lake Oconee')
-        location = get_or_create(session, Location, city='Lake Oconee, GA')
-        hotel = {'property_code': 'AHNRZ', 'name': hotel_name, 'city': location}
-        rates = get_rates(hotel)
-        save_results(rates, session)
+        for H in HOTELS:
+            hotel_name = get_or_create(session, Hotel, name=H['name'])
+            location = get_or_create(session, Location, city=H['city'])
+            hotel = {'property_code': H['property_code'], 'name': hotel_name, 'city': location}
+            rates = get_rates(hotel)
+            save_results(rates, session)
+            time.sleep(3)
         session.close()
     except () as e:
         print('Error: {}'.format(e))
