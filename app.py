@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from models import Hotel, db_setup
+from models import Rate, db_setup
 
 app = Flask(__name__)
 
@@ -7,9 +7,9 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     session = db_setup()
-    hotels = session.query(Hotel).all()
+    rates = session.query(Rate).filter_by(hotel_id=1)
     session.close()
-    return render_template('index.html', hotels=hotels)
+    return render_template('index.html', rates=rates)
 
 
 if __name__ == '__main__':

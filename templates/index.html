@@ -1,3 +1,5 @@
-{% for hotel in hotels %}
-<p><a href='{{ hotel.name }}</p>
+<h2>Ritz Lake Oconee Rates</h2>
+
+{% for rate in rates %}
+<p><b>Reservation Date:</b> {{ rate.arrive }} <b>Rate:</b> {{ rate.price }} <b>Updated:</b> {{ rate.updated }}</p>
 {% endfor %}
