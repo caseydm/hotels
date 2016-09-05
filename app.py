@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from models import Rate, Hotel, Location, db_setup
+from models import Hotel, db_setup
 
 app = Flask(__name__)
 
@@ -10,6 +10,7 @@ def index():
     hotels = session.query(Hotel).all()
     session.close()
     return render_template('index.html', hotels=hotels)
+
 
 if __name__ == '__main__':
     app.run()
