@@ -5,7 +5,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 import config
 
-
 Base = declarative_base()
 
 
@@ -51,24 +50,3 @@ def db_setup():
 
 def db_create_tables(engine):
     return Base.metadata.create_all(engine)
-
-
-def save_hotel(item, session):
-    rate = Rate(**item)
-
-    try:
-        q = session.query(Rate).filter(Rate.hotel==rate.hotel, Rate.arrive==rate.arrive, Rate.depart==rate.depart)
-        if q.count():
-            q.update({
-                'updated': datetime.datetime.utcnow(),
-                'price': rate.price
-                    })
-        else:
-            session.add(rate)
-        session.commit()
-    except:
-        session.rollback()
-        raise
-    finally:
-        print('hotel saved successfully')
-    return rate

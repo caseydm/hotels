@@ -43,9 +43,6 @@ def get_rates(hotel):
 
     rates = filtered
 
-    # sort rates by date
-    # rates.sort(key=lambda x: datetime.strptime(x['arrive'], '%A, %b %d'))
-
     return rates
 
 
@@ -127,7 +124,7 @@ def save_results(rates, session):
             q = session.query(Rate).filter(Rate.hotel==rate.hotel, Rate.arrive==rate.arrive)
             if q.count():
                 q.update({
-                    'updated': datetime.datetime.utcnow(),
+                    'updated': datetime.utcnow(),
                     'price': rate.price
                         })
             else:
