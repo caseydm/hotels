@@ -1,5 +1,5 @@
-<h2>Ritz Lake Oconee Rates</h2>
+<h2>Choose a location</h2>
 
-{% for rate in rates %}
-<p><b>Reservation Date:</b> {{ rate.arrive }} <b>Rate:</b> {{ rate.price }} <b>Updated:</b> {{ rate.updated }}</p>
+{% for location in locations %}
+<p><b>{{ location.city }}</b></p>
 {% endfor %}
