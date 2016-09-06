@@ -50,3 +50,6 @@ def db_setup():
 
 def db_create_tables(engine):
     return Base.metadata.create_all(engine)
+
+# note, you can create tables in app.py by importing Base
+# and running Base.metadata.create_all(bind=db.engine)

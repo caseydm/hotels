@@ -1,14 +1,16 @@
 from flask import Flask, render_template
-from models import Rate, db_setup
+from flask_sqlalchemy import SQLAlchemy
+from models import Rate
 
+# app setup
 app = Flask(__name__)
+app.config.from_object('config')
+db = SQLAlchemy(app)
 
 
 @app.route('/')
 def index():
-    session = db_setup()
-    rates = session.query(Rate).filter_by(hotel_id=1)
-    session.close()
+    rates = db.session.query(Rate).filter_by(hotel_id=1)
     return render_template('index.html', rates=rates)
 
 
