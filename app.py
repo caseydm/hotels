@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
-from models import Rate, Location, Hotel
+from models import Location
 
 # app setup
 app = Flask(__name__)
@@ -18,7 +18,7 @@ def index():
 @app.route('/<city>')
 def hotel_list(city):
     location = db.session.query(Location).filter_by(city=city).first()
-    hotels = db.session.query(Hotel).filter_by()
+    hotels = location.hotels
     return render_template('hotel_list.html', location=location, hotels=hotels)
 
 
