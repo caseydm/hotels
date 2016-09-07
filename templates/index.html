@@ -1,5 +1,5 @@
 <h2>Choose a location</h2>
 
 {% for location in locations %}
-<p><b>{{ location.city }}</b></p>
+<p><b><a href="{{ url_for('hotel_list', city=location.city) }}">{{ location.city }}</a></b></p>
 {% endfor %}
