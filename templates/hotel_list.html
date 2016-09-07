@@ -2,4 +2,9 @@
 
 {% for hotel in hotels %}
 <p><b>{{ hotel.name }}</b></p>
+    {% for rate in hotel.rates %}
+    <p>Arrive: {{ rate.arrive }}</p>
+    <p>Rate: {{ rate.price }}</p>
+    <p>Updated: {{ rate.updated }}</p>
+    {% endfor %}
 {% endfor %}

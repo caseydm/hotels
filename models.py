@@ -25,6 +25,7 @@ class Hotel(Base):
     phone_number = Column(String)
     parking_fee = Column(String)
     location_id = Column(Integer, ForeignKey('locations.id'))
+    rates = relationship('Rate', backref='hotel', lazy='dynamic')
 
 
 class Rate(Base):
@@ -38,13 +39,12 @@ class Rate(Base):
     location_id = Column(Integer, ForeignKey('locations.id'))
     hotel_id = Column(Integer, ForeignKey('hotels.id'))
     location = relationship('Location')
-    hotel = relationship('Hotel')
 
 
 # db operations
 def db_setup():
     engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
-    # Base.metadata.drop_all(engine)
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
