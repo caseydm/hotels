@@ -44,8 +44,8 @@ class Rate(Base):
 # db operations
 def db_setup():
     engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
+    # Base.metadata.drop_all(engine)
+    # Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
     return session

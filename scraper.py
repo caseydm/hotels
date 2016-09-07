@@ -15,6 +15,7 @@ def main():
         for H in HOTELS:
             hotel_name = get_or_create(session, Hotel, name=H['name'])
             location = get_or_create(session, Location, city=H['city'])
+            hotel_name.location_id = location.id
             hotel = {'property_code': H['property_code'], 'name': hotel_name, 'city': location}
             rates = get_rates(hotel)
             save_results(rates, session)
