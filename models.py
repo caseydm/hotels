@@ -13,10 +13,9 @@ class Location(Base):
 
     id = Column(Integer, primary_key=True)
     city = Column(String, nullable=False, unique=True)
-    hotels = relationship('Hotel', backref='location', lazy='dynamic')
+    hotels = relationship('Hotel')
 
 
-# models
 class Hotel(Base):
     __tablename__ = 'hotels'
 
@@ -24,8 +23,9 @@ class Hotel(Base):
     name = Column(String, nullable=False)
     phone_number = Column(String)
     parking_fee = Column(String)
-    location_id = Column(Integer, ForeignKey('locations.id'))
-    rates = relationship('Rate', backref='hotel', lazy='dynamic')
+    location_id = Column(Integer, ForeignKey('locations.id'), nullable=False)
+    location = relationship('Location')
+    rates = relationship('Rate')
 
 
 class Rate(Base):
@@ -36,9 +36,7 @@ class Rate(Base):
     arrive = Column(Date, nullable=False)
     link = Column(String, nullable=False)
     updated = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
-    location_id = Column(Integer, ForeignKey('locations.id'))
-    hotel_id = Column(Integer, ForeignKey('hotels.id'))
-    location = relationship('Location')
+    hotel_id = Column(Integer, ForeignKey('hotels.id'), nullable=False)
 
 
 # db operations

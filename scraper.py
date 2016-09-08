@@ -13,10 +13,9 @@ def main():
     try:
         session = db_setup()
         for H in HOTELS:
-            hotel_name = get_or_create(session, Hotel, name=H['name'])
             location = get_or_create(session, Location, city=H['city'])
-            hotel_name.location_id = location.id
-            hotel = {'property_code': H['property_code'], 'name': hotel_name, 'city': location}
+            location.hotel = get_or_create(session, Hotel, name=H['name'])
+            hotel = {'property_code': H['property_code'], 'object': location.hotel}
             rates = get_rates(hotel)
             save_results(rates, session)
             time.sleep(3)
@@ -85,9 +84,8 @@ def parse_rates(soup, hotel):
             res_date = datetime.strptime(res_date, '%m/%d/%y')
 
             # append data to rates list
-            rates.append({
-                'hotel': hotel['name'],
-                'location': hotel['city'],
+            hotel = hotel['object']
+            hotel.rates.append({
                 'arrive': res_date,
                 'price': query['rate'][0],
                 'link': 'https://marriott.com' + urlunparse(parsed_url)
