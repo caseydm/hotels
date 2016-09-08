@@ -13,9 +13,10 @@ class Location(Base):
 
     id = Column(Integer, primary_key=True)
     city = Column(String, nullable=False, unique=True)
-    hotels = relationship('Hotel')
+    hotels = relationship('Hotel', backref='location', lazy='dynamic')
 
 
+# models
 class Hotel(Base):
     __tablename__ = 'hotels'
 
@@ -23,9 +24,8 @@ class Hotel(Base):
     name = Column(String, nullable=False)
     phone_number = Column(String)
     parking_fee = Column(String)
-    location_id = Column(Integer, ForeignKey('locations.id'), nullable=False)
-    location = relationship('Location')
-    rates = relationship('Rate')
+    location_id = Column(Integer, ForeignKey('locations.id'))
+    rates = relationship('Rate', backref='hotel', lazy='dynamic')
 
 
 class Rate(Base):
@@ -36,13 +36,15 @@ class Rate(Base):
     arrive = Column(Date, nullable=False)
     link = Column(String, nullable=False)
     updated = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
-    hotel_id = Column(Integer, ForeignKey('hotels.id'), nullable=False)
+    location_id = Column(Integer, ForeignKey('locations.id'))
+    hotel_id = Column(Integer, ForeignKey('hotels.id'))
+    location = relationship('Location')
 
 
 # db operations
 def db_setup():
     engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
-    Base.metadata.drop_all(engine)
+    # Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
