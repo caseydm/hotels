@@ -137,14 +137,14 @@ def save_results(rates, session, hotel):
                     'updated': datetime.utcnow(),
                     'price': rate.price
                         })
+                print('hotel updated')
             else:
                 hotel['object'].rates.append(rate)
+                print('hotel saved successfully')
             session.commit()
         except:
             session.rollback()
             raise
-        finally:
-            print('hotel saved successfully')
 
 
 # run program
