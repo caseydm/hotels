@@ -13,7 +13,8 @@ class Location(Base):
 
     id = Column(Integer, primary_key=True)
     city = Column(String, nullable=False, unique=True)
-    hotels = relationship('Hotel')
+
+    hotels = relationship('Hotel', back_populates='location')
 
 
 class Hotel(Base):
@@ -24,8 +25,9 @@ class Hotel(Base):
     phone_number = Column(String)
     parking_fee = Column(String)
     location_id = Column(Integer, ForeignKey('locations.id'), nullable=False)
-    location = relationship('Location')
-    rates = relationship('Rate')
+
+    location = relationship('Location', back_populates='hotels')
+    rates = relationship('Rate', back_populates='hotel')
 
 
 class Rate(Base):
@@ -37,7 +39,8 @@ class Rate(Base):
     link = Column(String, nullable=False)
     updated = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     hotel_id = Column(Integer, ForeignKey('hotels.id'), nullable=False)
-    hotel = relationship('Hotel')
+
+    hotel = relationship('Hotel', back_populates='rates')
 
 
 # db operations
