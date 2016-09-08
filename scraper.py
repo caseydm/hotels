@@ -18,10 +18,11 @@ def main():
         for item in HOTELS_TO_SCRAPE:
             # get or create a hotel linked to a location
             location = get_or_create(session, Location, city=item['city'])
-            location.hotel = get_or_create(session, Hotel, name=item['name'])
+            hotel = get_or_create(session, Hotel, name=item['name'], location=location)
+            session.commit()
 
             # create a hotel dictionary to pass to the other functions
-            hotel = {'property_code': H['property_code'], 'object': location.hotel}
+            hotel = {'property_code': item['property_code'], 'object': hotel}
 
             # get rates dictionary
             rates = get_rates(hotel)
@@ -137,7 +138,7 @@ def save_results(rates, session, hotel):
                     'price': rate.price
                         })
             else:
-                hotel.append(rate)
+                hotel['object'].rates.append(rate)
             session.commit()
         except:
             session.rollback()

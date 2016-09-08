@@ -47,7 +47,7 @@ class Rate(Base):
     id = Column(Integer, primary_key=True)
     price = Column(Numeric(6, 2))
     arrive = Column(Date, nullable=False)
-    link = Column(String(100), nullable=False)
+    link = Column(String(500), nullable=False)
     updated = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     hotel_id = Column(Integer, ForeignKey('hotels.id'), nullable=False)
 
