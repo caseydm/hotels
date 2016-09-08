@@ -4,21 +4,30 @@ from datetime import datetime, timedelta
 from dateutil import relativedelta
 from urllib.parse import urlparse, parse_qs, urlunparse
 from robobrowser import RoboBrowser
-from models import Rate, Hotel, Location, db_setup
+from models import Rate, Hotel, Location, create_db_session
 from utils import get_or_create
-from settings import HOTELS
+from constants import HOTELS_TO_SCRAPE
 
 
 def main():
     try:
-        session = db_setup()
-        for H in HOTELS:
-            hotel_name = get_or_create(session, Hotel, name=H['name'])
-            location = get_or_create(session, Location, city=H['city'])
-            hotel_name.location_id = location.id
-            hotel = {'property_code': H['property_code'], 'name': hotel_name, 'city': location}
+        # create db session
+        session = create_db_session()
+
+        # loop through list of hotels to scrape
+        for item in HOTELS_TO_SCRAPE:
+            # get or create a hotel linked to a location
+            location = get_or_create(session, Location, city=item['city'])
+            location.hotel = get_or_create(session, Hotel, name=item['name'])
+
+            # create a hotel dictionary to pass to the other functions
+            hotel = {'property_code': H['property_code'], 'object': location.hotel}
+
+            # get rates dictionary
             rates = get_rates(hotel)
-            save_results(rates, session)
+
+            # save to database
+            save_results(rates, session, hotel)
             time.sleep(3)
         session.close()
     except () as e:
@@ -33,7 +42,7 @@ def get_rates(hotel):
     # get rates for this month and next month
     for d in dates:
         soup = get_soup(d['arrive'], d['depart'], hotel)
-        rates += parse_rates(soup, hotel)
+        rates += parse_rates(soup)
         time.sleep(2)
 
     # remove duplicates
@@ -65,7 +74,7 @@ def get_soup(arrive, depart, hotel):
     return browser
 
 
-def parse_rates(soup, hotel):
+def parse_rates(soup):
     # get calendar links
     table = soup.find('table')
     urls = table.find_all('a', class_='t-no-decor')
@@ -86,8 +95,6 @@ def parse_rates(soup, hotel):
 
             # append data to rates list
             rates.append({
-                'hotel': hotel['name'],
-                'location': hotel['city'],
                 'arrive': res_date,
                 'price': query['rate'][0],
                 'link': 'https://marriott.com' + urlunparse(parsed_url)
@@ -116,7 +123,7 @@ def build_dates():
     return dates
 
 
-def save_results(rates, session):
+def save_results(rates, session, hotel):
 
     for item in rates:
         rate = Rate(**item)
@@ -130,7 +137,7 @@ def save_results(rates, session):
                     'price': rate.price
                         })
             else:
-                session.add(rate)
+                hotel.append(rate)
             session.commit()
         except:
             session.rollback()

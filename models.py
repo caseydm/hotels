@@ -8,6 +8,17 @@ import config
 Base = declarative_base()
 
 
+# db operations
+def create_db_session():
+    engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    return session
+
+
+# models
 class Location(Base):
     __tablename__ = 'locations'
 
@@ -41,16 +52,6 @@ class Rate(Base):
     hotel_id = Column(Integer, ForeignKey('hotels.id'), nullable=False)
 
     hotel = relationship('Hotel', back_populates='rates')
-
-
-# db operations
-def db_setup():
-    engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
-    # Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
 
 
 # note, you can create tables in app.py by importing Base
