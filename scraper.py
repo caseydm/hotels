@@ -64,7 +64,7 @@ def get_soup(arrive, depart, hotel):
     return browser
 
 
-def parse_rates(soup, hotel):
+def parse_rates(soup):
     # get calendar links
     table = soup.find('table')
     urls = table.find_all('a', class_='t-no-decor')
@@ -83,9 +83,10 @@ def parse_rates(soup, hotel):
             res_date = query['fromDate'][0]
             res_date = datetime.strptime(res_date, '%m/%d/%y')
 
+            rates = []
+
             # append data to rates list
-            hotel = hotel['object']
-            hotel.rates.append({
+            rates.append({
                 'arrive': res_date,
                 'price': query['rate'][0],
                 'link': 'https://marriott.com' + urlunparse(parsed_url)
