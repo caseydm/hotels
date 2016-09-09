@@ -128,17 +128,16 @@ def save_results(rates, session, hotel):
 
     for item in rates:
         rate = Rate(**item)
-        rate.hotel = hotel['object']
 
         try:
             # check if already in database
-            q = session.query(Rate).filter(Rate.hotel==rate.hotel, Rate.arrive==rate.arrive).first()
+            q = session.query(Rate).filter(Rate.hotel==hotel['object'], Rate.arrive==rate.arrive).first()
             if q:
                 q.updated = datetime.utcnow()
                 q.price = rate.price
-                print('hotel updated')
+                print(q.arrive, 'hotel updated')
             else:
-            #   hotel['object'].rates.append(rate)
+                hotel['object'].rates.append(rate)
                 print('hotel saved successfully')
             session.commit()
         except:
