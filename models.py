@@ -11,7 +11,7 @@ Base = declarative_base()
 # db operations
 def create_db_session():
     engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
-    # Base.metadata.drop_all(engine)
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
