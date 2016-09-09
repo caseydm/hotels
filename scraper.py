@@ -128,6 +128,7 @@ def save_results(rates, session, hotel):
 
     for item in rates:
         rate = Rate(**item)
+        rate.hotel = hotel['object']
 
         try:
             # check if already in database
