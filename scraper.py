@@ -19,7 +19,6 @@ def main():
             # get or create a hotel linked to a location
             location = get_or_create(session, Location, city=item['city'])
             hotel = get_or_create(session, Hotel, name=item['name'], location=location)
-            session.commit()
 
             # create a hotel dictionary to pass to the other functions
             hotel = {'property_code': item['property_code'], 'object': hotel}
