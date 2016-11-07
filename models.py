@@ -52,7 +52,3 @@ class Rate(Base):
     hotel_id = Column(Integer, ForeignKey('hotels.id'), nullable=False)
 
     hotel = relationship('Hotel', back_populates='rates')
-
-
-# note, you can create tables in app.py by importing Base
-# and running Base.metadata.create_all(bind=db.engine)
