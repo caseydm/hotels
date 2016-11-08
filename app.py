@@ -10,7 +10,6 @@ db = SQLAlchemy(app)
 
 @app.route('/')
 def index():
-    # rates = db.session.query(Rate).filter_by(hotel_id=1)
     locations = db.session.query(Location).all()
     return render_template('index.html', locations=locations)
 

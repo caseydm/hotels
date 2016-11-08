@@ -3,8 +3,7 @@
 {% for hotel in hotels %}
 <p><b>{{ hotel.name }}</b></p>
     {% for rate in hotel.rates %}
-    <p>Arrive: {{ rate.arrive }}</p>
-    <p>Rate: {{ rate.price }}</p>
-    <p>Updated: {{ rate.updated }}</p>
+    <p>Date: {{ rate.arrive.strftime('%A, %b %-d') }}</p>
+    <p>Rate: <a href="{{ rate.link }}">{{ rate.price }}</a></p>
     {% endfor %}
 {% endfor %}
