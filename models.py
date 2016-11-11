@@ -38,7 +38,7 @@ class Hotel(Base):
     location_id = Column(Integer, ForeignKey('locations.id'), nullable=False)
 
     location = relationship('Location', back_populates='hotels')
-    rates = relationship('Rate', back_populates='hotel', order_by="Rate.arrive")
+    rates = relationship('Rate', back_populates='hotel', order_by='Rate.arrive', lazy='joined')
 
 
 class Rate(Base):
