@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+
+{% block content %}
 <h2>{{ location.city }}</h2>
 
 {% for hotel in hotels %}
@@ -7,3 +10,4 @@
     <p>Rate: <a href="{{ rate.link }}">{{ rate.price }}</a></p>
     {% endfor %}
 {% endfor %}
+{% endblock %}
