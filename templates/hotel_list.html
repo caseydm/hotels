@@ -4,10 +4,20 @@
 <h2>{{ location.city }}</h2>
 
 {% for hotel in hotels %}
-<p><b>{{ hotel.name }}</b></p>
-    {% for rate in hotel.rates %}
-    <p>Date: {{ rate.arrive.strftime('%A, %b %-d') }}</p>
-    <p>Rate: <a href="{{ rate.link }}">{{ rate.price }}</a></p>
-    {% endfor %}
+<div class="panel panel-default">
+    <div class="panel-heading"><b>{{ hotel.name }}</b></div>
+    <div class="panel-body">
+        <a class="btn btn-primary" data-toggle="collapse" href="#rates{{ hotel.id }}" aria-expanded="false" aria-controls="collapseExample">
+    View Rates
+  </a>
+        <br/><br/>
+        <div id="rates{{ hotel.id }}" class="collapse">
+            {% for rate in hotel.rates %}
+            <p>Date: {{ rate.arrive.strftime('%A, %b %-d') }}</p>
+            <p>Rate: <a href="{{ rate.link }}">{{ rate.price }}</a></p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endfor %}
 {% endblock %}
