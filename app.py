@@ -2,7 +2,7 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import contains_eager
 from models import Location, Rate, Hotel
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # app setup
 app = Flask(__name__)
@@ -24,9 +24,9 @@ def hotel_list(city):
         join(Rate).\
         options(contains_eager(Hotel.rates)).\
         filter(Location.city == city).\
-        filter(Rate.arrive >= datetime.now())
+        filter(Rate.arrive > datetime.utcnow() - timedelta(days=1)).\
+        order_by(Rate.arrive)
 
-    print(hotels)
     return render_template('hotel_list.html', location=location, hotels=hotels)
 
 
