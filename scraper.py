@@ -96,8 +96,8 @@ def parse_rates(soup):
             # append data to rates list
             rates.append({
                 'arrive': res_date,
-                'price': query['rate'][0],
-                'link': 'https://marriott.com' + urlunparse(parsed_url)
+                'govt_rate': query['rate'][0],
+                'govt_link': 'https://marriott.com' + urlunparse(parsed_url)
             })
 
     return rates

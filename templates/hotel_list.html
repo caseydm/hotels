@@ -14,7 +14,7 @@
         <div id="rates{{ hotel.id }}" class="collapse">
             {% for rate in hotel.rates %}
             <p>Date: {{ rate.arrive.strftime('%A, %b %-d') }}</p>
-            <p>Rate: <a href="{{ rate.link }}">{{ rate.price }}</a></p>
+            <p>Rate: <a href="{{ rate.govt_link }}">{{ rate.govt_rate }}</a></p>
             {% endfor %}
         </div>
     </div>

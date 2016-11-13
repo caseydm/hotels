@@ -11,7 +11,7 @@ Base = declarative_base()
 # db operations
 def create_db_session():
     engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
-    # Base.metadata.drop_all(engine)
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -46,9 +46,13 @@ class Rate(Base):
     __tablename__ = 'rates'
 
     id = Column(Integer, primary_key=True)
-    price = Column(Numeric(6, 2))
+    govt_rate = Column(Numeric(6, 2))
+    initial_govt_rate = Column(Numeric(6, 2))
+    commercial_rate = Column(Numeric(6, 2))
+    initial_commercial_rate = Column(Numeric(6, 2))
     arrive = Column(Date, nullable=False)
-    link = Column(String(500), nullable=False)
+    govt_link = Column(String(500), nullable=False)
+    commercial_link = Column(String(500))
     updated = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     hotel_id = Column(Integer, ForeignKey('hotels.id'), nullable=False)
 
