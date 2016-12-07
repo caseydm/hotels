@@ -23,11 +23,20 @@ def main():
             # create a hotel dictionary to pass to the other functions
             hotel = {'property_code': item['property_code'], 'object': hotel}
 
+            # govt rates
             # get rates dictionary
-            rates = get_rates(hotel)
+            rates = get_rates(hotel, govt=True)
 
             # save to database
-            save_results(rates, session, hotel)
+            save_results(rates, session, hotel, govt=True)
+            time.sleep(3)
+
+            # commercial rates
+            # get rates dictionary
+            rates = get_rates(hotel, govt=False)
+
+            # save to database
+            save_results(rates, session, hotel, govt=False)
             time.sleep(3)
         session.close()
     except () as e:
@@ -35,14 +44,14 @@ def main():
         sys.exit(1)
 
 
-def get_rates(hotel):
+def get_rates(hotel, govt):
     dates = build_dates()
     rates = []
 
     # get rates for this month and next month
     for d in dates:
-        soup = get_soup(d['arrive'], d['depart'], hotel)
-        rates += parse_rates(soup)
+        soup = get_soup(d['arrive'], d['depart'], hotel, govt)
+        rates += parse_rates(soup, govt)
         time.sleep(2)
 
     # remove duplicates
@@ -57,7 +66,12 @@ def get_rates(hotel):
     return rates
 
 
-def get_soup(arrive, depart, hotel):
+def get_soup(arrive, depart, hotel, govt):
+    if govt == True:
+        rateCode = 'GOV'
+    else:
+        rateCode = 'none'
+
     browser = RoboBrowser(parser='html.parser')
     browser.open('http://www.marriott.com/reservation/availabilitySearch.mi?propertyCode=' + hotel['property_code'])
 
@@ -66,7 +80,7 @@ def get_soup(arrive, depart, hotel):
     form['fromDate'].value = arrive
     form['toDate'].value = depart
     form['flexibleDateSearch'] = 'true'
-    form['clusterCode'] = 'GOV'
+    form['clusterCode'] = rateCode
 
     # submit form
     browser.submit_form(form)
@@ -74,7 +88,7 @@ def get_soup(arrive, depart, hotel):
     return browser
 
 
-def parse_rates(soup):
+def parse_rates(soup, govt):
     # get calendar links
     table = soup.find('table')
     urls = table.find_all('a', class_='t-no-decor')
@@ -93,12 +107,22 @@ def parse_rates(soup):
             res_date = query['fromDate'][0]
             res_date = datetime.strptime(res_date, '%m/%d/%y')
 
-            # append data to rates list
-            rates.append({
-                'arrive': res_date,
-                'govt_rate': query['rate'][0],
-                'govt_link': 'https://marriott.com' + urlunparse(parsed_url)
-            })
+            if govt == True:
+                # append data to rates list
+                rates.append({
+                    'arrive': res_date,
+                    'govt_rate': query['rate'][0],
+                    'govt_rate_initial': query['rate'][0],
+                    'govt_link': 'https://marriott.com' + urlunparse(parsed_url)
+                })
+            elif govt == False:
+                # append data to rates list
+                rates.append({
+                    'arrive': res_date,
+                    'commercial_rate': query['rate'][0],
+                    'commercial_rate_initial': query['rate'][0],
+                    'commercial_link': 'https://marriott.com' + urlunparse(parsed_url)
+                })
 
     return rates
 
@@ -123,7 +147,7 @@ def build_dates():
     return dates
 
 
-def save_results(rates, session, hotel):
+def save_results(rates, session, hotel, govt):
 
     for item in rates:
         rate = Rate(**item)
@@ -131,9 +155,13 @@ def save_results(rates, session, hotel):
         try:
             # check if already in database
             q = session.query(Rate).filter(Rate.hotel==hotel['object'], Rate.arrive==rate.arrive).first()
-            if q:
+            if q and govt == True:
                 q.updated = datetime.utcnow()
-                q.price = rate.price
+                q.govt_rate = rate.govt_rate
+                print(q.arrive, 'hotel updated')
+            elif q and govt == False:
+                q.updated = datetime.utcnow()
+                q.commercial_rate = rate.commercial_rate
                 print(q.arrive, 'hotel updated')
             else:
                 hotel['object'].rates.append(rate)

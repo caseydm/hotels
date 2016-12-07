@@ -11,12 +11,16 @@ Base = declarative_base()
 # db operations
 def create_db_session():
     engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
-    # Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
     return session
 
+def reset_db():
+    engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    return None
 
 # models
 class Location(Base):
@@ -47,11 +51,11 @@ class Rate(Base):
 
     id = Column(Integer, primary_key=True)
     govt_rate = Column(Numeric(6, 2))
-    initial_govt_rate = Column(Numeric(6, 2))
+    govt_rate_initial = Column(Numeric(6, 2))
     commercial_rate = Column(Numeric(6, 2))
-    initial_commercial_rate = Column(Numeric(6, 2))
+    commercial_rate_initial = Column(Numeric(6, 2))
     arrive = Column(Date, nullable=False)
-    govt_link = Column(String(500), nullable=False)
+    govt_link = Column(String(500))
     commercial_link = Column(String(500))
     updated = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     hotel_id = Column(Integer, ForeignKey('hotels.id'), nullable=False)
