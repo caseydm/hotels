@@ -112,7 +112,6 @@ def parse_rates(soup, govt):
                 rates.append({
                     'arrive': res_date,
                     'govt_rate': query['rate'][0],
-                    'govt_rate_initial': query['rate'][0],
                     'govt_link': 'https://marriott.com' + urlunparse(parsed_url)
                 })
             elif govt == False:
@@ -120,7 +119,6 @@ def parse_rates(soup, govt):
                 rates.append({
                     'arrive': res_date,
                     'commercial_rate': query['rate'][0],
-                    'commercial_rate_initial': query['rate'][0],
                     'commercial_link': 'https://marriott.com' + urlunparse(parsed_url)
                 })
 
@@ -151,19 +149,32 @@ def save_results(rates, session, hotel, govt):
 
     for item in rates:
         rate = Rate(**item)
+        print(item)
 
         try:
             # check if already in database
             q = session.query(Rate).filter(Rate.hotel==hotel['object'], Rate.arrive==rate.arrive).first()
-            if q and govt == True:
+
+            # update inital rate
+            if q:
+                if 'govt_rate' in item and q.govt_rate_initial is None:
+                    q.govt_rate_initial = rate.govt_rate
+                elif 'commercial_rate' in item and q.commercial_rate_initial is None:
+                    q.commercial_rate_initial = rate.commercial_rate
+
+            if q and govt is True:
                 q.updated = datetime.utcnow()
                 q.govt_rate = rate.govt_rate
                 print(q.arrive, 'hotel updated')
-            elif q and govt == False:
+            elif q and govt is False:
                 q.updated = datetime.utcnow()
                 q.commercial_rate = rate.commercial_rate
                 print(q.arrive, 'hotel updated')
             else:
+                if govt is True:
+                    rate.govt_rate_initial = rate.govt_rate
+                elif govt is False:
+                    rate.commercial_rate_initial = rate.commercial_rate
                 hotel['object'].rates.append(rate)
                 print('hotel saved successfully')
             session.commit()
