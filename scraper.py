@@ -67,7 +67,7 @@ def get_rates(hotel, govt):
 
 
 def get_soup(arrive, depart, hotel, govt):
-    if govt == True:
+    if govt is True:
         rateCode = 'GOV'
     else:
         rateCode = 'none'
@@ -76,11 +76,15 @@ def get_soup(arrive, depart, hotel, govt):
     browser.open('http://www.marriott.com/reservation/availabilitySearch.mi?propertyCode=' + hotel['property_code'])
 
     form = browser.get_form(action='/reservation/availabilitySearch.mi?isSearch=false')
+    time.sleep(2)
 
-    form['fromDate'].value = arrive
-    form['toDate'].value = depart
-    form['flexibleDateSearch'] = 'true'
-    form['clusterCode'] = rateCode
+    try:
+        form['fromDate'].value = arrive
+        form['toDate'].value = depart
+        form['flexibleDateSearch'] = 'true'
+        form['clusterCode'] = rateCode
+    except TypeError:
+        print(browser.parsed)
 
     # submit form
     browser.submit_form(form)
@@ -149,7 +153,6 @@ def save_results(rates, session, hotel, govt):
 
     for item in rates:
         rate = Rate(**item)
-        print(item)
 
         try:
             # check if already in database
