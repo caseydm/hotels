@@ -39,7 +39,7 @@ def main():
                 save_results(rates, session, hotel, govt=False)
                 print(item['name'] + ' processed successfully')
                 time.sleep(randint(4, 60))
-            except AttributeError:
+            except AttributeError, TypeError:
                 print('Error occured for ' + item['name'])
                 continue
         session.close()
