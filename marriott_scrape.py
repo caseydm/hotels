@@ -50,8 +50,8 @@ def scrape_marriott(HOTELS_TO_SCRAPE):
                 email_message('Error occured for ' + item['name'] + '. ' + e)
                 bad += 1
                 continue
-        print(good + ' processed, ' + bad + ' failed')
-        email_message(good + ' processed, ' + bad + ' failed')
+        print('{} processed, {} failed'.format(good, bad))
+        email_message('{} processed, {} failed'.format(good, bad))
         session.close()
 
 
