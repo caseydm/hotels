@@ -6,15 +6,14 @@ from urllib.parse import urlparse, parse_qs, urlunparse
 from robobrowser import RoboBrowser
 from models import Rate, Hotel, Location, create_db_session
 from utils import get_or_create, build_dates
-from constants import US_RITZ_HOTELS
 
 
-def main():
+def scrape_marriott(HOTELS_TO_SCRAPE):
         # create db session
         session = create_db_session()
 
         # loop through list of hotels to scrape
-        for item in US_RITZ_HOTELS:
+        for item in HOTELS_TO_SCRAPE:
             try:
                 # get or create a hotel linked to a location
                 location = get_or_create(session, Location, city=item['city'])
@@ -29,7 +28,7 @@ def main():
 
                 # save to database
                 save_results(rates, session, hotel, govt=True)
-                time.sleep(randint(2, 5))
+                time.sleep(randint(20, 30))
 
                 # commercial rates
                 # get rates dictionary
@@ -38,9 +37,9 @@ def main():
                 # save to database
                 save_results(rates, session, hotel, govt=False)
                 print(item['name'] + ' processed successfully')
-                time.sleep(randint(4, 60))
-            except AttributeError, TypeError:
-                print('Error occured for ' + item['name'])
+                time.sleep(randint(30, 60))
+            except (AttributeError, TypeError) as e:
+                print('Error occured for ' + item['name'] + '. ' + e)
                 continue
         session.close()
 
@@ -160,8 +159,3 @@ def save_results(rates, session, hotel, govt):
         except:
             session.rollback()
             raise
-
-
-# run program
-if __name__ == '__main__':
-    main()
