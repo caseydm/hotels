@@ -1,12 +1,12 @@
 import time
 import sys
-from datetime import datetime, timedelta
-from dateutil import relativedelta
+from datetime import datetime
+from random import randint
 from urllib.parse import urlparse, parse_qs, urlunparse
 from robobrowser import RoboBrowser
 from models import Rate, Hotel, Location, create_db_session
-from utils import get_or_create
-from constants import HOTELS_TO_SCRAPE
+from utils import get_or_create, build_dates
+from constants import US_RITZ_HOTELS
 
 
 def main():
@@ -15,7 +15,7 @@ def main():
         session = create_db_session()
 
         # loop through list of hotels to scrape
-        for item in HOTELS_TO_SCRAPE:
+        for item in US_RITZ_HOTELS:
             # get or create a hotel linked to a location
             location = get_or_create(session, Location, city=item['city'])
             hotel = get_or_create(session, Hotel, name=item['name'], location=location)
@@ -29,7 +29,7 @@ def main():
 
             # save to database
             save_results(rates, session, hotel, govt=True)
-            time.sleep(3)
+            time.sleep(randint(2, 5))
 
             # commercial rates
             # get rates dictionary
@@ -37,7 +37,7 @@ def main():
 
             # save to database
             save_results(rates, session, hotel, govt=False)
-            time.sleep(3)
+            time.sleep(randint(4, 60))
         session.close()
     except () as e:
         print('Error: {}'.format(e))
@@ -52,7 +52,7 @@ def get_rates(hotel, govt):
     for d in dates:
         soup = get_soup(d['arrive'], d['depart'], hotel, govt)
         rates += parse_rates(soup, govt)
-        time.sleep(2)
+        time.sleep(randint(2, 5))
 
     # remove duplicates
     filtered = []
@@ -75,8 +75,9 @@ def get_soup(arrive, depart, hotel, govt):
     browser = RoboBrowser(parser='html.parser')
     browser.open('http://www.marriott.com/reservation/availabilitySearch.mi?propertyCode=' + hotel['property_code'])
 
+    time.sleep(1)
+
     form = browser.get_form(action='/reservation/availabilitySearch.mi?isSearch=false')
-    time.sleep(2)
 
     try:
         form['fromDate'].value = arrive
@@ -127,26 +128,6 @@ def parse_rates(soup, govt):
                 })
 
     return rates
-
-
-def build_dates():
-    dates = []
-    today = datetime.now()
-    next_month = today + relativedelta.relativedelta(months=1)
-
-    # now
-    dates.append({
-        'arrive': today.strftime('%m/%d/%Y'),
-        'depart': (today + timedelta(days=1)).strftime('%m/%d/%Y')
-    })
-
-    # next month
-    dates.append({
-        'arrive': next_month.strftime('%m/%d/%Y'),
-        'depart': (next_month + timedelta(days=1)).strftime('%m/%d/%Y')
-    })
-
-    return dates
 
 
 def save_results(rates, session, hotel, govt):
