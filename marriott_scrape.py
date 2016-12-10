@@ -11,6 +11,8 @@ from utils import get_or_create, build_dates
 def scrape_marriott(HOTELS_TO_SCRAPE):
         # create db session
         session = create_db_session()
+        good = 0
+        bad = 0
 
         # loop through list of hotels to scrape
         for item in HOTELS_TO_SCRAPE:
@@ -38,9 +40,12 @@ def scrape_marriott(HOTELS_TO_SCRAPE):
                 save_results(rates, session, hotel, govt=False)
                 print(item['name'] + ' processed successfully')
                 time.sleep(randint(30, 60))
-            except (AttributeError, TypeError) as e:
+                good += 1
+            except (AttributeError, TypeError, ConnectionError) as e:
                 print('Error occured for ' + item['name'] + '. ' + e)
+                bad += 1
                 continue
+        print(good + ' processed, ' + bad + ' failed')
         session.close()
 
 
