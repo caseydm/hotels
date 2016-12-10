@@ -1,11 +1,10 @@
 import time
-import sys
 from datetime import datetime
 from random import randint
 from urllib.parse import urlparse, parse_qs, urlunparse
 from robobrowser import RoboBrowser
 from models import Rate, Hotel, Location, create_db_session
-from utils import get_or_create, build_dates
+from utils import get_or_create, build_dates, email_message
 
 
 def scrape_marriott(HOTELS_TO_SCRAPE):
@@ -38,14 +37,21 @@ def scrape_marriott(HOTELS_TO_SCRAPE):
 
                 # save to database
                 save_results(rates, session, hotel, govt=False)
+
+                # log result and increase 'good process' counter
                 print(item['name'] + ' processed successfully')
-                time.sleep(randint(30, 60))
                 good += 1
+
+                # wait between 30 and 60 seconds before next loop
+                time.sleep(randint(30, 60))
             except (AttributeError, TypeError, ConnectionError) as e:
+                # log exception
                 print('Error occured for ' + item['name'] + '. ' + e)
+                email_message('Error occured for ' + item['name'] + '. ' + e)
                 bad += 1
                 continue
         print(good + ' processed, ' + bad + ' failed')
+        email_message(good + ' processed, ' + bad + ' failed')
         session.close()
 
 

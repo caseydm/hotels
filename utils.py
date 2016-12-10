@@ -1,5 +1,7 @@
+import sendgrid
 from datetime import datetime, timedelta
 from dateutil import relativedelta
+from sendgrid.helpers.mail import *
 
 
 def get_or_create(session, model, **kwargs):
@@ -31,3 +33,15 @@ def build_dates():
     })
 
     return dates
+
+
+def email_message(msg):
+    # sendgrid setup
+    sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+
+    from_email = Email(os.environ.get('FROM_EMAIL'))
+    subject = 'Ritz DB Message'
+    to_email = Email(os.environ.get('TO_EMAIL'))
+    content = Content('text/html', msg)
+    mail = Mail(from_email, subject, to_email, content)
+    sg.client.mail.send.post(request_body=mail.get())
