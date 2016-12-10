@@ -10,38 +10,39 @@ from constants import US_RITZ_HOTELS
 
 
 def main():
-    try:
         # create db session
         session = create_db_session()
 
         # loop through list of hotels to scrape
         for item in US_RITZ_HOTELS:
-            # get or create a hotel linked to a location
-            location = get_or_create(session, Location, city=item['city'])
-            hotel = get_or_create(session, Hotel, name=item['name'], location=location)
+            try:
+                # get or create a hotel linked to a location
+                location = get_or_create(session, Location, city=item['city'])
+                hotel = get_or_create(session, Hotel, name=item['name'], location=location)
 
-            # create a hotel dictionary to pass to the other functions
-            hotel = {'property_code': item['property_code'], 'object': hotel}
+                # create a hotel dictionary to pass to the other functions
+                hotel = {'property_code': item['property_code'], 'object': hotel}
 
-            # govt rates
-            # get rates dictionary
-            rates = get_rates(hotel, govt=True)
+                # govt rates
+                # get rates dictionary
+                rates = get_rates(hotel, govt=True)
 
-            # save to database
-            save_results(rates, session, hotel, govt=True)
-            time.sleep(randint(2, 5))
+                # save to database
+                save_results(rates, session, hotel, govt=True)
+                time.sleep(randint(2, 5))
 
-            # commercial rates
-            # get rates dictionary
-            rates = get_rates(hotel, govt=False)
+                # commercial rates
+                # get rates dictionary
+                rates = get_rates(hotel, govt=False)
 
-            # save to database
-            save_results(rates, session, hotel, govt=False)
-            time.sleep(randint(4, 60))
+                # save to database
+                save_results(rates, session, hotel, govt=False)
+                print(item['name'] + ' processed successfully')
+                time.sleep(randint(4, 60))
+            except AttributeError:
+                print('Error occured for ' + item['name'])
+                continue
         session.close()
-    except () as e:
-        print('Error: {}'.format(e))
-        sys.exit(1)
 
 
 def get_rates(hotel, govt):
@@ -79,14 +80,11 @@ def get_soup(arrive, depart, hotel, govt):
 
     form = browser.get_form(action='/reservation/availabilitySearch.mi?isSearch=false')
 
-    try:
-        form['fromDate'].value = arrive
-        form['toDate'].value = depart
-        form['flexibleDateSearch'] = 'true'
-        form['clusterCode'] = rateCode
-    except TypeError:
-        print(browser.parsed)
-
+    form['fromDate'].value = arrive
+    form['toDate'].value = depart
+    form['flexibleDateSearch'] = 'true'
+    form['clusterCode'] = rateCode
+    
     # submit form
     browser.submit_form(form)
 
@@ -149,18 +147,15 @@ def save_results(rates, session, hotel, govt):
             if q and govt is True:
                 q.updated = datetime.utcnow()
                 q.govt_rate = rate.govt_rate
-                print(q.arrive, 'hotel updated')
             elif q and govt is False:
                 q.updated = datetime.utcnow()
                 q.commercial_rate = rate.commercial_rate
-                print(q.arrive, 'hotel updated')
             else:
                 if govt is True:
                     rate.govt_rate_initial = rate.govt_rate
                 elif govt is False:
                     rate.commercial_rate_initial = rate.commercial_rate
                 hotel['object'].rates.append(rate)
-                print('hotel saved successfully')
             session.commit()
         except:
             session.rollback()
