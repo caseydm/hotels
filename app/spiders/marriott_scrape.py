@@ -3,7 +3,7 @@ from datetime import datetime
 from random import randint
 from urllib.parse import urlparse, parse_qs, urlunparse
 from robobrowser import RoboBrowser
-from ..app.models import Rate, Hotel, Location, create_db_session
+from app.models import Rate, Hotel, Location, create_db_session
 from utils import get_or_create, build_dates, email_message
 
 
