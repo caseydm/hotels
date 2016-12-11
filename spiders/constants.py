@@ -57,3 +57,7 @@ RITZ5 = [
     {'property_code': 'WASRT', 'name': 'The Ritz-Carlton, Washington, D.C.', 'city': 'Washington, DC'},
     {'property_code': 'NYCRW', 'name': 'The Ritz-Carlton New York, Westchester', 'city': 'White Plains, NY'}
 ]
+
+RITZ_TEST = [
+    {'property_code': 'ATLRZ', 'name': 'The Ritz-Carlton, Atlanta', 'city': 'Atlanta, GA'}
+]
