@@ -13,8 +13,15 @@
         <br/><br/>
         <div id="rates{{ hotel.id }}" class="collapse">
             {% for rate in hotel.rates %}
-            <p>Date: {{ rate.arrive.strftime('%A, %b %-d') }}</p>
-            <p>Rate: <a href="{{ rate.govt_link }}">{{ rate.govt_rate }}</a></p>
+                <p><b>Date: {{ rate.arrive.strftime('%A, %b %-d') }}</b></p>
+                <p>Government Rate: 
+                    {% if rate.govt_rate == None %}
+                        Not available
+                    {% else %}
+                        <a href="{{ rate.govt_link }}">{{ rate.govt_rate }}</a>
+                    {% endif %}
+                </p>
+                <p>Commercial Rate: <a href="{{ rate.commercial_link }}">{{ rate.commercial_rate }}</a></p>
             {% endfor %}
         </div>
     </div>
