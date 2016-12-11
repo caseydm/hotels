@@ -1,12 +1,12 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import contains_eager
-from models import Location, Rate, Hotel
+from app.models import Location, Rate, Hotel
 from datetime import datetime, timedelta
 
 # app setup
 app = Flask(__name__)
-app.config.from_object('config')
+app.config.from_object('app.config')
 db = SQLAlchemy(app)
 
 

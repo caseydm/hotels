@@ -1,4 +1,4 @@
-from marriott_scrape import scrape_marriott
-from constants import RITZ2
+from app.spiders.marriott_scrape import scrape_marriott
+from app.spiders.constants import RITZ2
 
 scrape_marriott(RITZ2)
