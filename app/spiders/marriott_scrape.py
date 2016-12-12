@@ -94,7 +94,7 @@ def get_soup(arrive, depart, hotel, govt):
     form['toDate'].value = depart
     form['flexibleDateSearch'] = 'true'
     form['clusterCode'] = rateCode
-    
+
     # submit form
     browser.submit_form(form)
 
@@ -147,7 +147,7 @@ def save_results(rates, session, hotel, govt):
             # check if already in database
             q = session.query(Rate).filter(Rate.hotel==hotel['object'], Rate.arrive==rate.arrive).first()
 
-            # update inital rate
+            # update inital_rate if that field is empty
             if q:
                 if 'govt_rate' in item and q.govt_rate_initial is None:
                     q.govt_rate_initial = rate.govt_rate
