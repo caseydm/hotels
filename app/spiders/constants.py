@@ -52,7 +52,6 @@ RITZ4 = [
 
 RITZ5 = [
     {'property_code': 'WHRLH', 'name': 'The Ritz Carlton Club, Vail', 'city': 'Vail, CO'},
-    {'property_code': 'HNLRR', 'name': 'The Ritz-Carlton Residences, Waikiki Beach', 'city': 'Waikiki Beach, HI'},
     {'property_code': 'WASGO', 'name': 'The Ritz-Carlton Georgetown, Washington, D.C.', 'city': 'Washington, DC'},
     {'property_code': 'WASRT', 'name': 'The Ritz-Carlton, Washington, D.C.', 'city': 'Washington, DC'},
     {'property_code': 'NYCRW', 'name': 'The Ritz-Carlton New York, Westchester', 'city': 'White Plains, NY'}
@@ -86,7 +85,6 @@ JW2 = [
 
 JW3 = [
     {'property_code': 'NYCEX', 'name': 'JW Marriott Essex House New York', 'city': 'New York, NY'},
-    {'property_code': 'BNAJW', 'name': 'JW Marriott Nashville', 'city': 'Nashville, TN'},
     {'property_code': 'AUSJW', 'name': 'JW Marriott Austin', 'city': 'Austin, TX'},
     {'property_code': 'HOUJW', 'name': 'JW Marriott Houston', 'city': 'Houston, TX'},
     {'property_code': 'HOUDJ', 'name': 'JW Marriott Houston Downtown', 'city': 'Houston, TX'},
@@ -95,4 +93,9 @@ JW3 = [
 
 RITZ_TEST = [
     {'property_code': 'ATLRZ', 'name': 'The Ritz-Carlton, Atlanta', 'city': 'Atlanta, GA'}
+]
+
+ON_HOLD = [
+    {'property_code': 'BNAJW', 'name': 'JW Marriott Nashville', 'city': 'Nashville, TN'},
+    {'property_code': 'HNLRR', 'name': 'The Ritz-Carlton Residences, Waikiki Beach', 'city': 'Waikiki Beach, HI'}
 ]
