@@ -12,7 +12,7 @@ db = SQLAlchemy(app)
 
 @app.route('/')
 def index():
-    locations = db.session.query(Location).all()
+    locations = db.session.query(Location).order_by(Location.city).all()
     return render_template('index.html', locations=locations)
 
 
