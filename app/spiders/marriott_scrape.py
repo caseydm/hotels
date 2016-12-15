@@ -14,7 +14,7 @@ def scrape_marriott(HOTELS_TO_SCRAPE):
         logging.basicConfig(
             stream=sys.stdout,
             level=logging.INFO,
-            format='%(asctime)s %(levelname)s:%(message)s'
+            format='%(levelname)s:%(message)s'
         )
 
         # create db session
@@ -53,7 +53,6 @@ def scrape_marriott(HOTELS_TO_SCRAPE):
 
                 # wait between 30 and 60 seconds before next loop
                 if item != HOTELS_TO_SCRAPE[-1]:
-                    print('sleeping')
                     time.sleep(randint(30, 60))
             except (AttributeError, TypeError, ConnectionError) as e:
                 # log exception
