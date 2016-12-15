@@ -1,5 +1,6 @@
 import time
 import logging
+import sys
 from datetime import datetime
 from random import randint
 from urllib.parse import urlparse, parse_qs, urlunparse
@@ -9,6 +10,13 @@ from app.spiders.utils import get_or_create, build_dates, email_message
 
 
 def scrape_marriott(HOTELS_TO_SCRAPE):
+        # logging setup
+        logging.basicConfig(
+            stream=sys.stdout,
+            level=logging.INFO,
+            format='%(asctime)s %(levelname)s:%(message)s'
+        )
+
         # create db session
         session = create_db_session()
         good = 0
@@ -44,7 +52,9 @@ def scrape_marriott(HOTELS_TO_SCRAPE):
                 good += 1
 
                 # wait between 30 and 60 seconds before next loop
-                time.sleep(randint(30, 60))
+                if item != HOTELS_TO_SCRAPE[-1]:
+                    print('sleeping')
+                    time.sleep(randint(30, 60))
             except (AttributeError, TypeError, ConnectionError) as e:
                 # log exception
                 error_message = 'Error occured for {}, error details: {}'.format(item['name'], e)
