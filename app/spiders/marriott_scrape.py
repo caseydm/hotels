@@ -1,4 +1,5 @@
 import time
+import logging
 from datetime import datetime
 from random import randint
 from urllib.parse import urlparse, parse_qs, urlunparse
@@ -39,19 +40,20 @@ def scrape_marriott(HOTELS_TO_SCRAPE):
                 save_results(rates, session, hotel, govt=False)
 
                 # log result and increase 'good process' counter
-                print(item['name'] + ' processed successfully')
+                logging.info(item['name'] + ' processed successfully')
                 good += 1
 
                 # wait between 30 and 60 seconds before next loop
                 time.sleep(randint(30, 60))
             except (AttributeError, TypeError, ConnectionError) as e:
                 # log exception
-                print('Error occured for ' + item['name'] + '. ' + e)
-                email_message('Error occured for ' + item['name'] + '. ' + e)
+                error_message = 'Error occured for {}, error details: {}'.format(item['name'], e)
+                logging.error(error_message)
                 bad += 1
                 continue
-        print('{} processed, {} failed'.format(good, bad))
-        email_message('{} processed, {} failed'.format(good, bad))
+        logging.info('{} processed, {} failed'.format(good, bad))
+        if bad > 0:
+            email_message('{} failed, check logs'.format(bad))
         session.close()
 
 
