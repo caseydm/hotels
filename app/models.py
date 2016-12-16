@@ -30,8 +30,7 @@ class Location(Base):
 
     id = Column(Integer, primary_key=True)
     city = Column(String(50), nullable=False, unique=True)
-    per_diem_rate = Column(Numeric(6, 2))
-
+    zip_code = Column(String(5))
     hotels = relationship('Hotel', back_populates='location')
 
 
