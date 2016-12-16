@@ -97,7 +97,7 @@ def get_soup(arrive, depart, hotel, govt):
     browser = RoboBrowser(parser='html.parser')
     browser.open('http://www.marriott.com/reservation/availabilitySearch.mi?propertyCode=' + hotel['property_code'])
 
-    time.sleep(randint(3, 5))
+    time.sleep(randint(2, 3))
 
     form = browser.get_form(action='/reservation/availabilitySearch.mi?isSearch=false')
 
@@ -108,6 +108,8 @@ def get_soup(arrive, depart, hotel, govt):
 
     # submit form
     browser.submit_form(form)
+
+    time.sleep(randint(2, 3))
 
     return browser
 
