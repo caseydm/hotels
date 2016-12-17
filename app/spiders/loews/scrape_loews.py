@@ -1,6 +1,8 @@
 import requests
 import json
 import time
+import os
+import ast
 
 
 def getCookies(arrive, depart):
@@ -40,11 +42,16 @@ def getHeaders(arrive, depart):
     }
     return headers
 
+
 def getGovtRate(arrive, depart):
     data = 'hotel=LATL&checkin=' + arrive + '&checkout=' + depart + '&adults%5B%5D=2&children%5B%5D=0&rate_type=GOVERNMENT&rate_code='
     response = requests.post('https://www.loewshotels.com/en/reservations/getavailability', headers=getHeaders(arrive, depart), cookies=getCookies(arrive, depart), data=data)
-    hotel = json.loads(response.text)
-    # govtRate = min(get_rates(hotel["rooms"]))
+    hotel = response.json()
+    #with open(os.path.join(os.path.dirname(__file__), "data.txt")) as data_file:    
+        #hotel = ast.literal_eval(data_file)
+    # govtRate = min(get_rates(hotel['room_rates']))
+    rate = get_rate(hotel['rooms'])
+    print(min(rate))
     return hotel
 
 
@@ -56,25 +63,18 @@ def getStandardRate(arrive, depart):
     return standardRate
 
 
-def get_rates(df):
+def get_rate(df):
     rates = []
     for key, value in df.items():
-        if key == 'rate':
+        if key == 'rate' and type(value) == int:
             rates.append(value)
         if isinstance(df[key], dict):
-            rates += get_rates(df[key])
+            rates += get_rate(df[key])
     return rates
 
 
-def scrapeLoews(arrive, depart):
+getGovtRate('12/18/2016', '12/19/2016')
 
-    govtRate = getGovtRate(arrive, depart)
-
-    return govtRate
-
-content = scrapeLoews('12/17/2016', '12/18/2016')
-
-print(content)
 
 # session = db_setup()
 # dates = getWeekends(1, '%Y/%m/%d')
