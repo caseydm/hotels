@@ -10,14 +10,37 @@ def scrape_loews(HOTELS_TO_SCRAPE):
     for item in HOTELS_TO_SCRAPE:
         arrive = '12/18/2016'
         depart = '12/19/2016'
-        commercial_rate = get_rate(arrive, depart, item['property_code'], item['url_code'])
-        time.sleep(3)
-        govt_rate = get_rate(arrive, depart, item['property_code'], item['url_code'], rate_type='GOVERNMENT')
 
-        save_result(arrive, govt_rate, commercial_rate, item)
+        # get commercial rate
+        commercial_rate = get_rate(
+            arrive,
+            depart,
+            item['property_code'],
+            item['url_code']
+        )
+
+        time.sleep(3)
+
+        # get government rate
+        govt_rate = get_rate(
+            arrive,
+            depart,
+            item['property_code'],
+            item['url_code'],
+            rate_type='GOVERNMENT'
+        )
+
+        # build links
+        link_root = 'https://www.loewshotels.com/reservations/{}/'.format(item['url_code'])
+        link_dates = '/checkin/{}/checkout/{}'.format(arrive, depart)
+        govt_link = link_root + link_dates + '/rate_type/GOVERNMENT/adults/2/children/0'
+        commercial_link = link_root + link_dates + '/rate_type//adults/2/children/0'
+
+        save_result(arrive, govt_rate, commercial_rate, item, govt_link, commercial_link)
 
         print('Government rate is: {}'.format(govt_rate))
         print('Commercial rate is: {}'.format(commercial_rate))
+        return None
 
 
 def get_headers(arrive, depart, url_code, rate_type=''):
@@ -64,7 +87,7 @@ def parse_rates(df):
     return rates
 
 
-def save_result(arrive, govt_rate, commercial_rate, item):
+def save_result(arrive, govt_rate, commercial_rate, item, govt_link, commercial_link):
     # create db session
     session = create_db_session()
 
@@ -79,6 +102,8 @@ def save_result(arrive, govt_rate, commercial_rate, item):
     rate.arrive = datetime.strptime(arrive, '%m/%d/%Y')
     rate.govt_rate = govt_rate
     rate.commercial_rate = commercial_rate
+    rate.govt_link = govt_link
+    rate.commercial_link = commercial_link
 
     session.add(rate)
     session.commit()
