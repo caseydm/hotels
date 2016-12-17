@@ -1,5 +1,6 @@
 import requests
 import time
+from random import randint
 from datetime import datetime
 from app.spiders.loews.hotels import LOEWS_TEST
 from app.models import Rate, Hotel, Location, create_db_session
@@ -19,7 +20,7 @@ def scrape_loews(HOTELS_TO_SCRAPE):
             item['url_code']
         )
 
-        time.sleep(3)
+        time.sleep(randint(3, 5))
 
         # get government rate
         govt_rate = get_rate(
