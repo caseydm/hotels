@@ -1,4 +1,5 @@
 import requests
+import time
 from app.spiders.loews.hotels import LOEWS_TEST
 
 
@@ -20,8 +21,13 @@ def get_headers(arrive, depart, url_code, rate_type=''):
 
 
 def get_rate(arrive, depart, property_code, url_code, rate_type=''):
-    data = 'hotel=' + property_code + '&checkin=' + arrive + '&checkout=' + depart + '&adults%5B%5D=2&children%5B%5D=0&rate_type=' + rate_type + '&rate_code='
-    response = requests.post('https://www.loewshotels.com/en/reservations/getavailability', headers=get_headers(arrive, depart, url_code, rate_type), data=data)
+    data = 'hotel={}&checkin={}&checkout={}&adults%5B%5D=2&children%5B%5D=0&rate_type={}&rate_code=' \
+        .format(property_code, arrive, depart, rate_type)
+    response = requests.post(
+        'https://www.loewshotels.com/en/reservations/getavailability',
+        headers=get_headers(arrive, depart, url_code, rate_type),
+        data=data
+    )
     response_json = response.json()
 
     # get list of available rates
@@ -42,4 +48,8 @@ def parse_rates(df):
 
 
 for item in LOEWS_TEST:
-    print(get_rate('12/18/2016', '12/19/2016', item['property_code'], item['url_code']))
+    commercial_rate = get_rate('12/18/2016', '12/19/2016', item['property_code'], item['url_code'])
+    time.sleep(3)
+    govt_rate = get_rate('12/18/2016', '12/19/2016', item['property_code'], item['url_code'], rate_type='GOVERNMENT')
+    print('Government rate is: {}'.format(govt_rate))
+    print('Commercial rate is: {}'.format(commercial_rate))
