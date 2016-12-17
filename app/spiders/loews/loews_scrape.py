@@ -8,8 +8,8 @@ from app.spiders.utils import get_or_create
 
 def scrape_loews(HOTELS_TO_SCRAPE):
     for item in HOTELS_TO_SCRAPE:
-        arrive = '12/18/2016'
-        depart = '12/19/2016'
+        arrive = '12/31/2016'
+        depart = '1/1/2017'
 
         # get commercial rate
         commercial_rate = get_rate(
@@ -31,10 +31,10 @@ def scrape_loews(HOTELS_TO_SCRAPE):
         )
 
         # build links
-        link_root = 'https://www.loewshotels.com/reservations/{}/'.format(item['url_code'])
-        link_dates = '/checkin/{}/checkout/{}'.format(arrive, depart)
+        link_root = 'https://www.loewshotels.com/reservations/{}'.format(item['url_code'])
+        link_dates = '/checkin/{}/checkout/{}'.format(link_date(arrive), link_date(depart))
         govt_link = link_root + link_dates + '/rate_type/GOVERNMENT/adults/2/children/0'
-        commercial_link = link_root + link_dates + '/rate_type//adults/2/children/0'
+        commercial_link = link_root + link_dates + '/adults/2/children/0'
 
         save_result(arrive, govt_rate, commercial_rate, item, govt_link, commercial_link)
 
@@ -70,10 +70,13 @@ def get_rate(arrive, depart, property_code, url_code, rate_type=''):
     )
     response_json = response.json()
 
-    # get list of available rates
-    rates = parse_rates(response_json['rooms'])
-    # select lowest
-    rate = min(rates)
+    if response_json['status'] is True:
+        # get list of available rates
+        rates = parse_rates(response_json['rooms'])
+        # select lowest
+        rate = min(rates)
+    else:
+        rate = None
     return rate
 
 
@@ -97,17 +100,41 @@ def save_result(arrive, govt_rate, commercial_rate, item, govt_link, commercial_
 
     rate = Rate()
 
-    rate.location = location
-    rate.hotel = hotel
-    rate.arrive = datetime.strptime(arrive, '%m/%d/%Y')
-    rate.govt_rate = govt_rate
-    rate.commercial_rate = commercial_rate
-    rate.govt_link = govt_link
-    rate.commercial_link = commercial_link
+    # check if already in database
+    q = session.query(Rate).filter(Rate.hotel==hotel, Rate.arrive==arrive).first()
 
-    session.add(rate)
+    # update if already exists
+    if q:
+        q.updated = datetime.utcnow()
+        q.govt_rate = govt_rate
+        q.commercial_rate = commercial_rate
+
+        # update initial rates if not already
+        if govt_rate and q.govt_rate_initial is None:
+            q.govt_rate_initial = govt_rate
+        elif commercial_rate and q.commercial_rate_initial is None:
+            q.commercial_rate_initial = commercial_rate
+    else:
+        # new hotel rate
+        rate.location = location
+        rate.hotel = hotel
+        rate.arrive = datetime.strptime(arrive, '%m/%d/%Y')
+        rate.govt_rate = govt_rate
+        rate.govt_rate_initial = govt_rate
+        rate.commercial_rate_initial = commercial_rate
+        rate.commercial_rate = commercial_rate
+        rate.govt_link = govt_link
+        rate.commercial_link = commercial_link
+        session.add(rate)
+
     session.commit()
     session.close()
+
+
+def link_date(d):
+    n = datetime.strptime(d, '%m/%d/%Y')
+    formatted = datetime.strftime(n, '%Y-%m-%d')
+    return formatted
 
 
 scrape_loews(LOEWS_TEST)
