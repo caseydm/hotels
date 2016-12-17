@@ -19,8 +19,11 @@ def scrape_marriott(HOTELS_TO_SCRAPE):
 
         # create db session
         session = create_db_session()
+
+        # set variables
         good = 0
         bad = 0
+        retries = 2
 
         # loop through list of hotels to scrape
         for item in HOTELS_TO_SCRAPE:
@@ -55,10 +58,17 @@ def scrape_marriott(HOTELS_TO_SCRAPE):
                 if item != HOTELS_TO_SCRAPE[-1]:
                     time.sleep(randint(30, 60))
             except (AttributeError, TypeError, ConnectionError) as e:
-                # log exception
-                error_message = 'Error occured for {}, error details: {}'.format(item['name'], e)
-                logging.error(error_message)
-                bad += 1
+                if retries > 0:
+                    # add item back to end of list
+                    HOTELS_TO_SCRAPE.append(item)
+                    error_message = 'Retry - Error occured for {}, error details: {}'.format(item['name'], e)
+                    logging.error(error_message)
+                    retries -= 1
+                else:
+                    # log exception
+                    error_message = 'Error occured for {}, error details: {}'.format(item['name'], e)
+                    logging.error(error_message)
+                    bad += 1
                 continue
         logging.info('{} processed, {} failed'.format(good, bad))
         if bad > 0:
