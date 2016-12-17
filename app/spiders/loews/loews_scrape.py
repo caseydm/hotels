@@ -1,6 +1,23 @@
 import requests
 import time
+from datetime import datetime
 from app.spiders.loews.hotels import LOEWS_TEST
+from app.models import Rate, Hotel, Location, create_db_session
+from app.spiders.utils import get_or_create
+
+
+def scrape_loews(HOTELS_TO_SCRAPE):
+    for item in HOTELS_TO_SCRAPE:
+        arrive = '12/18/2016'
+        depart = '12/19/2016'
+        commercial_rate = get_rate(arrive, depart, item['property_code'], item['url_code'])
+        time.sleep(3)
+        govt_rate = get_rate(arrive, depart, item['property_code'], item['url_code'], rate_type='GOVERNMENT')
+
+        save_result(arrive, govt_rate, commercial_rate, item)
+
+        print('Government rate is: {}'.format(govt_rate))
+        print('Commercial rate is: {}'.format(commercial_rate))
 
 
 def get_headers(arrive, depart, url_code, rate_type=''):
@@ -47,9 +64,25 @@ def parse_rates(df):
     return rates
 
 
-for item in LOEWS_TEST:
-    commercial_rate = get_rate('12/18/2016', '12/19/2016', item['property_code'], item['url_code'])
-    time.sleep(3)
-    govt_rate = get_rate('12/18/2016', '12/19/2016', item['property_code'], item['url_code'], rate_type='GOVERNMENT')
-    print('Government rate is: {}'.format(govt_rate))
-    print('Commercial rate is: {}'.format(commercial_rate))
+def save_result(arrive, govt_rate, commercial_rate, item):
+    # create db session
+    session = create_db_session()
+
+    # get location and hotel
+    location = get_or_create(session, Location, city=item['city'])
+    hotel = get_or_create(session, Hotel, name=item['name'], location=location)
+
+    rate = Rate()
+
+    rate.location = location
+    rate.hotel = hotel
+    rate.arrive = datetime.strptime(arrive, '%m/%d/%Y')
+    rate.govt_rate = govt_rate
+    rate.commercial_rate = commercial_rate
+
+    session.add(rate)
+    session.commit()
+    session.close()
+
+
+scrape_loews(LOEWS_TEST)
