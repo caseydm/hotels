@@ -43,42 +43,26 @@ def getHeaders(arrive, depart):
     return headers
 
 
-def getGovtRate(arrive, depart):
+def get_rate(arrive, depart, govt=''):
     data = 'hotel=LATL&checkin=' + arrive + '&checkout=' + depart + '&adults%5B%5D=2&children%5B%5D=0&rate_type=GOVERNMENT&rate_code='
     response = requests.post('https://www.loewshotels.com/en/reservations/getavailability', headers=getHeaders(arrive, depart), cookies=getCookies(arrive, depart), data=data)
-    hotel = response.json()
-    #with open(os.path.join(os.path.dirname(__file__), "data.txt")) as data_file:    
-        #hotel = ast.literal_eval(data_file)
-    # govtRate = min(get_rates(hotel['room_rates']))
-    rate = get_rate(hotel['rooms'])
-    print(min(rate))
-    return hotel
+    response_json = response.json()
+
+    # get list of available rates
+    rates = parse_rates(response_json['rooms'])
+    # select lowest
+    rate = min(rates)
+    return rate
 
 
-def getStandardRate(arrive, depart):
-    data = 'hotel=LATL&checkin=' + arrive + '&checkout=' + depart + '&adults%5B%5D=2&children%5B%5D=0&rate_type=&rate_code='
-    response = requests.post('https://www.loewshotels.com/en/reservations/getroomsrates', headers=getHeaders(arrive, depart), cookies=getCookies(arrive, depart), data=data)
-    hotel = json.loads(response.text)
-    standardRate = min(get_rates(hotel["room_rates"]))
-    return standardRate
-
-
-def get_rate(df):
+def parse_rates(df):
     rates = []
     for key, value in df.items():
         if key == 'rate' and type(value) == int:
             rates.append(value)
         if isinstance(df[key], dict):
-            rates += get_rate(df[key])
+            rates += parse_rates(df[key])
     return rates
 
 
-getGovtRate('12/18/2016', '12/19/2016')
-
-
-# session = db_setup()
-# dates = getWeekends(1, '%Y/%m/%d')
-# for date in dates:
-#     rate = scrapeLoews(date['arrive'], date['depart'], session)
-#     save_hotel(rate, session)
-# session.close()
+print(get_rate('12/18/2016', '12/19/2016'))
