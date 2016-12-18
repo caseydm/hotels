@@ -17,8 +17,7 @@ def scrape_loews(HOTELS_TO_SCRAPE):
     )
 
     for item in HOTELS_TO_SCRAPE:
-        # dates = build_dates()
-        dates = ['1/1/2017']
+        dates = build_dates()
 
         for d in dates:
             arrive = d
