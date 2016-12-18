@@ -1,7 +1,7 @@
 import requests
 import time
 from random import randint
-from datetime import datetime
+from datetime import datetime, timedelta
 from app.spiders.loews.hotels import LOEWS_TEST
 from app.models import Rate, Hotel, Location, create_db_session
 from app.spiders.utils import get_or_create
@@ -9,39 +9,43 @@ from app.spiders.utils import get_or_create
 
 def scrape_loews(HOTELS_TO_SCRAPE):
     for item in HOTELS_TO_SCRAPE:
-        arrive = '12/31/2016'
-        depart = '1/1/2017'
+        dates = build_dates()
 
-        # get commercial rate
-        commercial_rate = get_rate(
-            arrive,
-            depart,
-            item['property_code'],
-            item['url_code']
-        )
+        for d in dates:
+            arrive = d
+            next_day = datetime.strptime(d, '%m/%d/%Y') + timedelta(days=1)
+            depart = datetime.strftime(next_day, '%m/%d/%Y')
 
-        time.sleep(randint(3, 5))
+            # get commercial rate
+            commercial_rate = get_rate(
+                arrive,
+                depart,
+                item['property_code'],
+                item['url_code']
+            )
 
-        # get government rate
-        govt_rate = get_rate(
-            arrive,
-            depart,
-            item['property_code'],
-            item['url_code'],
-            rate_type='GOVERNMENT'
-        )
+            time.sleep(randint(3, 5))
 
-        # build links
-        link_root = 'https://www.loewshotels.com/reservations/{}'.format(item['url_code'])
-        link_dates = '/checkin/{}/checkout/{}'.format(link_date(arrive), link_date(depart))
-        govt_link = link_root + link_dates + '/rate_type/GOVERNMENT/adults/2/children/0'
-        commercial_link = link_root + link_dates + '/adults/2/children/0'
+            # get government rate
+            govt_rate = get_rate(
+                arrive,
+                depart,
+                item['property_code'],
+                item['url_code'],
+                rate_type='GOVERNMENT'
+            )
 
-        save_result(arrive, govt_rate, commercial_rate, item, govt_link, commercial_link)
+            # build links
+            link_root = 'https://www.loewshotels.com/reservations/{}'.format(item['url_code'])
+            link_dates = '/checkin/{}/checkout/{}'.format(link_date(arrive), link_date(depart))
+            govt_link = link_root + link_dates + '/rate_type/GOVERNMENT/adults/2/children/0'
+            commercial_link = link_root + link_dates + '/adults/2/children/0'
 
-        print('Government rate is: {}'.format(govt_rate))
-        print('Commercial rate is: {}'.format(commercial_rate))
-        return None
+            save_result(arrive, govt_rate, commercial_rate, item, govt_link, commercial_link)
+
+            print('Government rate is: {}'.format(govt_rate))
+            print('Commercial rate is: {}'.format(commercial_rate))
+            return None
 
 
 def get_headers(arrive, depart, url_code, rate_type=''):
@@ -137,5 +141,14 @@ def link_date(d):
     formatted = datetime.strftime(n, '%Y-%m-%d')
     return formatted
 
+
+def build_dates():
+    base = datetime.today()
+    date_list = []
+    for x in range(0, 3):
+        d = base + timedelta(days=x)
+        d = datetime.strftime(d, '%m/%d/%Y')
+        date_list.append(d)
+    return date_list
 
 scrape_loews(LOEWS_TEST)
