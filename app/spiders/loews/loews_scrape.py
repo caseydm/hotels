@@ -24,6 +24,7 @@ def scrape_loews(HOTELS_TO_SCRAPE):
             next_day = datetime.strptime(d, '%m/%d/%Y') + timedelta(days=1)
             depart = datetime.strftime(next_day, '%m/%d/%Y')
 
+            logging.info('Processing {} for {}, commercial rate.'.format(item['name'], d)
             # get commercial rate
             commercial_rate = get_rate(
                 arrive,
@@ -34,6 +35,7 @@ def scrape_loews(HOTELS_TO_SCRAPE):
 
             time.sleep(randint(3, 5))
 
+            logging.info('Processing {} for {}, government rate.'.format(item['name'], d)
             # get government rate
             govt_rate = get_rate(
                 arrive,
@@ -87,9 +89,11 @@ def get_rate(arrive, depart, property_code, url_code, rate_type=''):
     warning = 'We couldn’t find any availability for the special offer'
     govt_not_available = False
 
-    if type(response_json['warnings']) is dict:
-        if warning in response_json['warnings']['AVAILABILITY']:
-            govt_not_available = True 
+    if 'warnings' in response_json:
+        if type(response_json['warnings']) is dict:
+            if warning in response_json['warnings']['AVAILABILITY']:
+                govt_not_available = True
+                print('govt not available')
 
     if response_json['status'] is True and govt_not_available is False:
         # get list of available rates
