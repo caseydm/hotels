@@ -17,7 +17,8 @@ def scrape_loews(HOTELS_TO_SCRAPE):
     )
 
     for item in HOTELS_TO_SCRAPE:
-        dates = build_dates()
+        # dates = build_dates()
+        dates = ['1/1/2017']
 
         for d in dates:
             arrive = d
@@ -83,7 +84,15 @@ def get_rate(arrive, depart, property_code, url_code, rate_type=''):
     )
     response_json = response.json()
 
-    if response_json['status'] is True:
+    # check for government rate not available string
+    warning = 'We couldn’t find any availability for the special offer'
+    govt_not_available = False
+
+    if type(response_json['warnings']) is dict:
+        if warning in response_json['warnings']['AVAILABILITY']:
+            govt_not_available = True 
+
+    if response_json['status'] is True and govt_not_available is False:
         # get list of available rates
         rates = parse_rates(response_json['rooms'])
         # select lowest
