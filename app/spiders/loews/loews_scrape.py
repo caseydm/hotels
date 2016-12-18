@@ -1,13 +1,21 @@
 import requests
 import time
+import logging
+import sys
 from random import randint
 from datetime import datetime, timedelta
-from app.spiders.loews.hotels import LOEWS_TEST
 from app.models import Rate, Hotel, Location, create_db_session
 from app.spiders.utils import get_or_create
 
 
 def scrape_loews(HOTELS_TO_SCRAPE):
+    # logging setup
+    logging.basicConfig(
+        stream=sys.stdout,
+        level=logging.INFO,
+        format='%(levelname)s:%(message)s'
+    )
+
     for item in HOTELS_TO_SCRAPE:
         dates = build_dates()
 
@@ -43,10 +51,8 @@ def scrape_loews(HOTELS_TO_SCRAPE):
 
             save_result(arrive, govt_rate, commercial_rate, item, govt_link, commercial_link)
 
-            print('Government rate is: {}'.format(govt_rate))
-            print('Commercial rate is: {}'.format(commercial_rate))
-
             time.sleep(randint(3, 5))
+        logging.info(item['name'] + ' processed successfully')
     return None
 
 
@@ -152,5 +158,3 @@ def build_dates():
         d = datetime.strftime(d, '%m/%d/%Y')
         date_list.append(d)
     return date_list
-
-scrape_loews(LOEWS_TEST)
