@@ -24,7 +24,7 @@ def scrape_loews(HOTELS_TO_SCRAPE):
             next_day = datetime.strptime(d, '%m/%d/%Y') + timedelta(days=1)
             depart = datetime.strftime(next_day, '%m/%d/%Y')
 
-            logging.info('Processing {} for {}, commercial rate.'.format(item['name'], d)
+            logging.info('Processing {} for {}, commercial rate.'.format(item['name'], d))
             # get commercial rate
             commercial_rate = get_rate(
                 arrive,
@@ -35,7 +35,7 @@ def scrape_loews(HOTELS_TO_SCRAPE):
 
             time.sleep(randint(3, 5))
 
-            logging.info('Processing {} for {}, government rate.'.format(item['name'], d)
+            logging.info('Processing {} for {}, government rate.'.format(item['name'], d))
             # get government rate
             govt_rate = get_rate(
                 arrive,
