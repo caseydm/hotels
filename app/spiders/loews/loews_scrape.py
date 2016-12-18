@@ -45,7 +45,9 @@ def scrape_loews(HOTELS_TO_SCRAPE):
 
             print('Government rate is: {}'.format(govt_rate))
             print('Commercial rate is: {}'.format(commercial_rate))
-            return None
+
+            time.sleep(randint(3, 5))
+    return None
 
 
 def get_headers(arrive, depart, url_code, rate_type=''):
