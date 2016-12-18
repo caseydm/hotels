@@ -153,7 +153,7 @@ def link_date(d):
 def build_dates():
     base = datetime.today()
     date_list = []
-    for x in range(0, 3):
+    for x in range(0, 30):
         d = base + timedelta(days=x)
         d = datetime.strftime(d, '%m/%d/%Y')
         date_list.append(d)
