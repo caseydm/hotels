@@ -55,6 +55,7 @@ def scrape_loews(HOTELS_TO_SCRAPE):
 
             time.sleep(randint(3, 5))
         logging.info(item['name'] + ' processed successfully')
+        time.sleep(randint(5, 8))
     return None
 
 
@@ -93,7 +94,6 @@ def get_rate(arrive, depart, property_code, url_code, rate_type=''):
         if type(response_json['warnings']) is dict:
             if warning in response_json['warnings']['AVAILABILITY']:
                 govt_not_available = True
-                print('govt not available')
 
     if response_json['status'] is True and govt_not_available is False:
         # get list of available rates
