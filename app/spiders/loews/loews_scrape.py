@@ -2,7 +2,7 @@ import requests
 import time
 import logging
 import sys
-from random import randint
+from random import randint, shuffle
 from datetime import datetime, timedelta
 from app.models import Rate, Hotel, Location, create_db_session
 from app.spiders.utils import get_or_create
@@ -169,4 +169,5 @@ def build_dates():
         d = base + timedelta(days=x)
         d = datetime.strftime(d, '%m/%d/%Y')
         date_list.append(d)
+    shuffle(date_list)
     return date_list
