@@ -105,6 +105,7 @@ def get_soup(arrive, depart, hotel, govt):
         rateCode = 'none'
 
     browser = RoboBrowser(parser='html.parser')
+
     browser.open('http://www.marriott.com/reservation/availabilitySearch.mi?propertyCode=' + hotel['property_code'])
 
     time.sleep(randint(2, 3))
