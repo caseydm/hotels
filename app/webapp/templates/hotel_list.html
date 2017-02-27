@@ -8,7 +8,7 @@
     <div class="panel-heading"><b>{{ hotel.name }}</b></div>
     <div class="panel-body">
         <br/><br/>
-        <div id="rates{{ hotel.id }}" class="collapse">
+        <div id="rates{{ hotel.id }}">
             {% for rate in hotel.rates %}
                 <p><b>Date: {{ rate.arrive.strftime('%A, %b %-d') }}</b></p>
                 <p>Government Rate: 
