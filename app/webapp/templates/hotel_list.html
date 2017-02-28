@@ -7,7 +7,6 @@
 <div class="panel panel-default">
     <div class="panel-heading"><b>{{ hotel.name }}</b></div>
     <div class="panel-body">
-        <br/><br/>
         <div id="rates{{ hotel.id }}">
             {% for rate in hotel.rates %}
                 <p><b>Date: {{ rate.arrive.strftime('%A, %b %-d') }}</b></p>
@@ -18,7 +17,12 @@
                         <a href="{{ rate.govt_link }}">{{ rate.govt_rate }}</a>
                     {% endif %}
                 </p>
-                <p>Commercial Rate: <a href="{{ rate.commercial_link }}">{{ rate.commercial_rate }}</a></p>
+                <p>Commercial Rate: 
+                {% if commercial.govt_rate == None %}
+                    Not available
+                {% else %}
+                <a href="{{ rate.commercial_link }}">{{ rate.commercial_rate }}</a></p>
+                {% endif %}
             {% endfor %}
         </div>
     </div>
