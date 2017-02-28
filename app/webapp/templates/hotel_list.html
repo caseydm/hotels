@@ -9,19 +9,21 @@
     <div class="panel-body">
         <div id="rates{{ hotel.id }}">
             {% for rate in hotel.rates %}
-                <p><b>Date: {{ rate.arrive.strftime('%A, %b %-d') }}</b></p>
-                <p>Government Rate: 
-                    {% if rate.govt_rate == None %}
+                {% if rate.govt_rate != None and rate.commercial_rate != None %}
+                    <p><b>Date: {{ rate.arrive.strftime('%A, %b %-d') }}</b></p>
+                    <p>Government Rate: 
+                        {% if rate.govt_rate == None %}
+                            Not available
+                        {% else %}
+                            <a href="{{ rate.govt_link }}">{{ rate.govt_rate }}</a>
+                        {% endif %}
+                    </p>
+                    <p>Commercial Rate: 
+                    {% if commercial.govt_rate == None %}
                         Not available
                     {% else %}
-                        <a href="{{ rate.govt_link }}">{{ rate.govt_rate }}</a>
+                    <a href="{{ rate.commercial_link }}">{{ rate.commercial_rate }}</a></p>
                     {% endif %}
-                </p>
-                <p>Commercial Rate: 
-                {% if commercial.govt_rate == None %}
-                    Not available
-                {% else %}
-                <a href="{{ rate.commercial_link }}">{{ rate.commercial_rate }}</a></p>
                 {% endif %}
             {% endfor %}
         </div>
