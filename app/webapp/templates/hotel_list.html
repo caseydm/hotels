@@ -19,7 +19,7 @@
                         {% endif %}
                     </p>
                     <p>Commercial Rate: 
-                    {% if commercial.govt_rate == None %}
+                    {% if rate.commercial_rate == None %}
                         Not available
                     {% else %}
                     <a href="{{ rate.commercial_link }}">{{ rate.commercial_rate }}</a></p>
